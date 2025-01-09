@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+
+    <color name="app_background">#FFF5E1
+    </color> <!-- Light Brown -->
+    <color name="button_color">#8B4513</color> <!-- Dark Brown -->
+    <color name="button_text_color">#FFFFFF</color> <!-- White for button text -->
+
+</resources>

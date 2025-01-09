@@ -1,0 +1,58 @@
+<!-- Add buttons to navigate between fragments -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".AuthActivity"
+    android:background="@color/app_background"
+    android:gravity="center"
+  >
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="WELCOME TO SCRIBBLE!"
+        android:textSize="25dp"
+        android:gravity="center"
+        android:textStyle="bold"
+        android:paddingTop="3dp"
+        android:layout_marginBottom="30dp"
+        />
+    <FrameLayout
+        android:id="@+id/fragmentContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="30dp"
+        />
+    <Button
+        android:id="@+id/signUpButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/button_background"
+        android:layout_marginBottom="15dp"
+
+
+        android:text="Sign Up" />
+    <Button
+        android:id="@+id/loginButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/button_background"
+        android:layout_marginBottom="15dp"
+
+        android:text="Login" />
+
+    <Button
+        android:id="@+id/continueWithoutLoginButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/button_background"
+
+        android:text="Continue Without Login" />
+
+
+</LinearLayout>
+
+
