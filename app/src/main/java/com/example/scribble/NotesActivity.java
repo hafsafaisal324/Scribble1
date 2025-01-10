@@ -11,9 +11,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.content.Context;
-
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -23,22 +23,27 @@ import java.util.ArrayList;
 
 public class NotesActivity extends AppCompatActivity {
 
-    private EditText inputNote;
+    private EditText inputNote, searchNote;
     private Button addNoteButton;
     private RecyclerView recyclerView;
     private NotesAdapter notesAdapter;
     private ArrayList<String> notesList;
     private NotesDatabaseHelper dbHelper;
     private TextView welcomeText;
-
+    private ImageView tickImageView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.notes_activity);
+
         inputNote = findViewById(R.id.inputNote);
+        searchNote = findViewById(R.id.searchNote);
         addNoteButton = findViewById(R.id.addNoteButton);
         recyclerView = findViewById(R.id.recyclerView);
+        welcomeText = findViewById(R.id.welcomeText);
+        tickImageView = findViewById(R.id.tickImageView); // Initialize tick ImageView
+
 
         notesList = new ArrayList<>();
         dbHelper = new NotesDatabaseHelper(this);
@@ -49,18 +54,29 @@ public class NotesActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(notesAdapter);
 
-        welcomeText = findViewById(R.id.welcomeText);
-
-        // Retrieve the username from the Intent
+        // Display welcome message
         String username = getIntent().getStringExtra("username");
-
-        // Display the welcome message
         if (username != null) {
             welcomeText.setText("Welcome, " + username + "!");
         } else {
             welcomeText.setText("Welcome, Guest!");
         }
 
+        // Search functionality
+        searchNote.addTextChangedListener(new android.text.TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                filterNotes(s.toString());
+            }
+
+            @Override
+            public void afterTextChanged(android.text.Editable s) {}
+        });
+
+        // Add note functionality
         addNoteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -70,9 +86,30 @@ public class NotesActivity extends AppCompatActivity {
                     notesList.add(note);
                     notesAdapter.notifyItemInserted(notesList.size() - 1);
                     inputNote.setText("");
+
+                    showTickAnimation();
+
                 }
             }
         });
+    }
+
+    private void showTickAnimation() {
+        // Make the tick image visible
+        tickImageView.setVisibility(View.VISIBLE);
+
+        // Add a fade-out animation for the tick image
+        tickImageView.animate()
+                .alpha(0f)
+                .setDuration(9000) // Adjust the duration of the animation
+                .withEndAction(new Runnable() {
+                    @Override
+                    public void run() {
+                        // Hide the tick image after the animation completes
+                        tickImageView.setVisibility(View.GONE);
+                        tickImageView.setAlpha(1f); // Reset the alpha value
+                    }
+                });
     }
 
     private void loadNotesFromDatabase() {
@@ -97,13 +134,29 @@ public class NotesActivity extends AppCompatActivity {
         db.delete("notes", "note = ?", new String[]{note});
     }
 
+    private void filterNotes(String query) {
+        ArrayList<String> filteredList = new ArrayList<>();
+        for (String note : notesList) {
+            if (note.toLowerCase().contains(query.toLowerCase())) {
+                filteredList.add(note);
+            }
+        }
+        notesAdapter.updateList(filteredList);
+    }
+
     // Inner class for RecyclerView Adapter
     private class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.NoteViewHolder> {
 
         private ArrayList<String> notesList;
 
         public NotesAdapter(ArrayList<String> notesList) {
-            this.notesList = notesList;
+            this.notesList = new ArrayList<>(notesList); // Make a copy to maintain original list
+        }
+
+        public void updateList(ArrayList<String> newList) {
+            this.notesList.clear();
+            this.notesList.addAll(newList);
+            notifyDataSetChanged();
         }
 
         @Override
@@ -144,7 +197,6 @@ public class NotesActivity extends AppCompatActivity {
             }
         }
     }
-//animation
 
     // Inner class for SQLite Helper
     private static class NotesDatabaseHelper extends android.database.sqlite.SQLiteOpenHelper {
@@ -155,7 +207,6 @@ public class NotesActivity extends AppCompatActivity {
         public NotesDatabaseHelper(Context context) {
             super(context, DATABASE_NAME, null, DATABASE_VERSION);
         }
-
 
         @Override
         public void onCreate(SQLiteDatabase db) {
@@ -169,3 +220,4 @@ public class NotesActivity extends AppCompatActivity {
         }
     }
 }
+
